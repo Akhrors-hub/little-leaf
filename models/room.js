@@ -19,23 +19,13 @@ module.exports = (sequelize, DataTypes) => {
         sunlight: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
-        },
-        // UserId: {
-        //     type: DataTypes.INTEGER,
-        //     allowNull: false,
-        // }
+        }
     });
 
     Room.associate = (models) => {
         Room.belongsTo(models.User, {
-        foreignKey: {allowNull: false},
+        foreignKey: { allowNull: false },
         });
-    }
-    Room.associate = (models) => {
-        Room.hasMany(models.Plant, {
-        onDelete: "cascade",
-            });
-        
     };
     
     return Room;

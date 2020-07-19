@@ -16,14 +16,6 @@ router.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/signup.html"));
 });
 
-router.get("/myrooms", (req, res) => {
-  if (!req.user) {
-    res.redirect("/");
-  } else {
-    res.sendFile(path.join(__dirname, "../client/rooms.html"));
-  }
-});
-
 // client side route to login page
 router.get("/login", (req, res) => {
   if (req.user) {
@@ -31,13 +23,6 @@ router.get("/login", (req, res) => {
   }
   res.sendFile(path.join(__dirname, "../client/login.html"));
 });
-
-router.get("/register", (req, res) => {
-  if (req.user) {
-    res.redirect("/members");
-  }
-  res.sendFile(path.join(__dirname, "../client/signup.html"));
-})
 
 // client side route to members page
 router.get("/members", isAuthenticated, (req, res) => {
@@ -49,40 +34,32 @@ router.get("/myplants", isAuthenticated, (req, res) => {
   res.sendFile(path.join(__dirname, "../client/plants.html"));
 });
 
-// client side route to facts page
-router.get("/facts", isAuthenticated, (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/facts.html"));
-});
-
 // client side route to search page
 router.get("/search", (req, res) => {
   let searchName = req.query.plant;
+
+  // let updatedSearch = searchName.split(' ').join('_');
 
   let allPlantsUrl = `https://v0.trefle.io/api/plants?q=${searchName}&token=${process.env.KEY}`;
 
   axios
     .get(allPlantsUrl)
     .then((response) => {
-      res.send(response.data);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.send({ err });
-    });
-});
+      let arr = response.data;
 
-router.get("/search/plant", (req,res) => {
-  let searchId = req.query.id;
-  let plantUrl = `https://v0.trefle.io/api/plants/${searchId}?token=${process.env.KEY}`;
-  
-  axios
-    .get(plantUrl)
+      //   let id = arr[0].id;
+      //   let plantUrl = `https://trefle.io/api/v1/plants/${id}?token=${process.env.KEY}`;
+
+      //   return axios.get(plantUrl);
+    })
     .then((response) => {
       res.send(response.data);
     })
     .catch((err) => {
       console.log(err);
-      res.send({ err });
+      res.send({
+        err
+      });
     });
 });
 

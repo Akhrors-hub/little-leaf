@@ -30,23 +30,20 @@ module.exports = {
   },
 
   getUser: async (req, res) => {
-
     if (req.user) {
       try {
         const user = await db.User.findOne({
           where: {
             id: req.user.id
           },
-          include: [db.Room ],
+          include: [db.User, ],
         });
 
         res.send({
           email: user.email,
-          firstName: user.first_name,
-          lastName: user.last_name,
-          Rooms: user.Rooms
+          firstName: user.firstName,
+          lastName: user.lastName
         });
-
       } catch (err) {
         res.send({
           err_msg: err
