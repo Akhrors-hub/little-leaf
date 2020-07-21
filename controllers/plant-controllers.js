@@ -56,22 +56,38 @@ module.exports = {
   },
 
   getAllPlants: async (req, res) => {
-    if (req.user){
-    try {
-      const allPlants = await db.Plant.findAll({ where: { RoomId: req.params.RoomId,
-      },
-      });
-      res.send(allPlants);
-    } catch (err) {
-      res.send({ err_message: err})
+    if (req.user) {
+      try {
+        const allPlants = await db.Plant.findAll({
+          where: {
+            RoomId: req.params.RoomId,
+          },
+        });
+        res.send(allPlants);
+      } catch (err) {
+        res.send({ err_message: err })
+      }
+    } else {
+      res.redirect('/');
     }
+  },
+
+  getAllUserPlants: async (req, res) => {
+    if (req.user) {
+      try {
+        const allUserPlants = await db.Plant.findAll({
+        });
+        res.send(allUserPlants);
+      } catch (err) {
+        res.send({ err_message: err })
+      }
     } else {
       res.redirect('/');
     }
   },
 
   deletePlant: async (req, res) => {
-    if (req.user){
+    if (req.user) {
       db.Plants.destroy({
         where: { id: req.params.id },
       })
@@ -82,15 +98,15 @@ module.exports = {
           const intervalToStop = waterSchedule.find((obj) => obj.id == req.body.id);
           clearInterval(intervalToStop.interval);
           console.log(intervalToStop);
-  
+
           const intervalToStop2 = pruneSchedule.find((obj) => obj.id == req.body.id);
           clearInterval(intervalToStop2.interval);
           console.log(intervalToStop2);
-  
+
           const intervalToStop3 = rotateSchedule.find((obj) => obj.id == req.body.id);
           clearInterval(intervalToStop3.interval);
           console.log(intervalToStop3);
-  
+
           const intervalToStop4 = repotSchedule.find((obj) => obj.id == req.body.id);
           clearInterval(intervalToStop4.interval);
           console.log(intervalToStop4);
@@ -112,24 +128,25 @@ const plantIntervals = ((req, res) => {
   // res.send(userPlants);
 
 
-  var dayInMilliseconds = 86400000;
+  // var dayInMilliseconds = 86400000;
+  var dayInMilliseconds = 2000;
   const waterTimer = setInterval(
-    () => waterPlant(req.user.email, newPlant.commonName), (dayInMilliseconds * newPlant.water_frequency)
+    () => waterPlant(req.user.email, newPlant.commonName), (Math.min((dayInMilliseconds * newPlant.water_frequency), Math.pow(2,31)-1))
   );
   waterSchedule.push({ id: count, interval: waterTimer });
 
   const pruneTimer = setInterval(
-    () => prunePlant(req.user.email, newPlant.commonName), (dayInMilliseconds * newPlant.prune_frequency)
+    () => prunePlant(req.user.email, newPlant.commonName), (Math.min((dayInMilliseconds * newPlant.prune_frequency), Math.pow(2,31)-1))
   );
   pruneSchedule.push({ id: count, interval: pruneTimer });
 
   const rotateTimer = setInterval(
-    () => rotatePlant(req.user.email, newPlant.commonName), (dayInMilliseconds * newPlant.rotate_frequency)
+    () => rotatePlant(req.user.email, newPlant.commonName), (Math.min((dayInMilliseconds * newPlant.rotate_frequency), Math.pow(2,31)-1))
   );
   rotateSchedule.push({ id: count, interval: rotateTimer });
 
   const repotTimer = setInterval(
-    () => repotPlant(req.user.email, newPlant.commonName), (dayInMilliseconds * newPlant.repot_frequency)
+    () => repotPlant(req.user.email, newPlant.commonName), (Math.min((dayInMilliseconds * newPlant.repot_frequency), Math.pow(2,31)-1))
   );
   repotSchedule.push({ id: count, interval: repotTimer });
 
